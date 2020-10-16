@@ -7,15 +7,20 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+
 jobs:
   build:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-        with:
-          ref: ${{ github.head_ref }}
-      
-      - name: asdf_plugin_test
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - macos-latest
+          - ubuntu-latest
+
+    runs-on: ${{ matrix.os }}
+    
+    steps: 
+      - name: test
         uses: asdf-vm/actions/plugin-test@v1
         with:
           command: "prometheus --version"
