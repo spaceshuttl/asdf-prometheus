@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+
+set -e
+set -o pipefail
+
+source "$(dirname "$0")/helpers.sh"
+
+printf "Downloading Prometheus %s\n" "${ASDF_INSTALL_VERSION}"
+
+platform_name=$(get_platform_name)
+archive_name="$(get_archive_name "${ASDF_INSTALL_VERSION}")"
+
+trap 'rm -rf "${ASDF_DOWNLOAD_PATH}/${archive_name}"' EXIT
+
+curl -sSL "https://github.com/prometheus/prometheus/releases/download/v${ASDF_INSTALL_VERSION}/${archive_name}" \
+    -o "${ASDF_DOWNLOAD_PATH}/${archive_name}"
+
+if [[ "$(get_platform_name)" == "darwin" ]] ; then
+    tar xvf "${ASDF_DOWNLOAD_PATH}/${archive_name}" -C "${ASDF_DOWNLOAD_PATH}"
+else
+    tar xvzf "${ASDF_DOWNLOAD_PATH}/${archive_name}" -C "${ASDF_DOWNLOAD_PATH}"
+fi
+
+
